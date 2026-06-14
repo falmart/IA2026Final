@@ -7,6 +7,7 @@ Uso:
     python main.py --model /ruta/al/modelo.gguf --max-seg 5
 """
 import argparse
+import os
 import sys
 import textwrap
 
@@ -16,7 +17,7 @@ from text_utils import split_sentences
 
 
 SEPARADOR = "─" * 60
-DEFAULT_MODEL = "/Users/ingram/qwen2.5-3b-instruct-q4_k_m.gguf"
+DEFAULT_MODEL = os.path.join(os.path.dirname(__file__), "models", "qwen2.5-3b-instruct-q4_k_m.gguf")
 
 
 def print_results(segments: list[list[str]]) -> None:

@@ -14,6 +14,7 @@ Uso:
 from __future__ import annotations
 import argparse
 import json
+import os
 from typing import List
 
 from llm_client import load_model, score_coherence
@@ -21,7 +22,7 @@ from segmenter import segment_dp
 from text_utils import split_sentences
 from dataset import get_all, get_by_id, boundaries_from_segments
 
-MODEL_PATH = "/Users/ingram/qwen2.5-3b-instruct-q4_k_m.gguf"
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "qwen2.5-3b-instruct-q4_k_m.gguf")
 
 
 # ── Métricas ────────────────────────────────────────────────────────────────

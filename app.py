@@ -1,6 +1,7 @@
 """
 Interfaz web Flask para el segmentador de contenido.
 """
+import os
 import threading
 from typing import List, Dict, Any
 from flask import Flask, render_template, request, jsonify
@@ -9,7 +10,7 @@ from llm_client import load_model, score_coherence
 from segmenter import segment_dp
 from text_utils import split_sentences
 
-MODEL_PATH = "/Users/ingram/qwen2.5-3b-instruct-q4_k_m.gguf"
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "qwen2.5-3b-instruct-q4_k_m.gguf")
 
 app = Flask(__name__)
 
