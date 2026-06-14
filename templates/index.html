@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Segmentador de Contenido</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #60a5fa;
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      margin-top: 0.5rem;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .card {
+      background: #1a1f2e;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 160px;
+      background: #0f1117;
+      border: 1px solid #2d3748;
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 0.95rem;
+      padding: 0.75rem 1rem;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus { border-color: #3b82f6; }
+
+    .options-row {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .option-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .option-group input[type="number"] {
+      background: #0f1117;
+      border: 1px solid #2d3748;
+      border-radius: 6px;
+      color: #e2e8f0;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.9rem;
+      outline: none;
+      width: 100%;
+    }
+
+    .option-group input[type="number"]:focus { border-color: #3b82f6; }
+
+    .hint { font-size: 0.78rem; color: #475569; }
+
+    button#btn-segmentar {
+      margin-top: 1.25rem;
+      width: 100%;
+      padding: 0.8rem;
+      background: #3b82f6;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+    }
+
+    button#btn-segmentar:hover { background: #2563eb; }
+    button#btn-segmentar:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Loading */
+    #loading {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+      color: #64748b;
+    }
+
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid #2d3748;
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Error */
+    #error-box {
+      display: none;
+      background: #3b1c1c;
+      border: 1px solid #dc2626;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      color: #fca5a5;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Results */
+    #results { display: none; }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .results-header h2 {
+      font-size: 1.1rem;
+      color: #60a5fa;
+    }
+
+    .badge {
+      background: #1e3a5f;
+      color: #93c5fd;
+      border-radius: 20px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .segment-card {
+      background: #111827;
+      border: 1px solid #2d3748;
+      border-left: 4px solid #3b82f6;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .segment-card:nth-child(2) { border-left-color: #8b5cf6; }
+    .segment-card:nth-child(3) { border-left-color: #10b981; }
+    .segment-card:nth-child(4) { border-left-color: #f59e0b; }
+    .segment-card:nth-child(5) { border-left-color: #ef4444; }
+    .segment-card:nth-child(n+6) { border-left-color: #64748b; }
+
+    .segment-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.6rem;
+    }
+
+    .segment-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .score-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .score-bar {
+      width: 100px;
+      height: 6px;
+      background: #2d3748;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: #10b981;
+      transition: width 0.6s ease;
+    }
+
+    .score-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #34d399;
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .segment-text {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .sentence-pill {
+      display: inline-block;
+      background: #1e2d3d;
+      border-radius: 4px;
+      padding: 0.1rem 0.35rem;
+      margin: 0.15rem 0.1rem;
+      font-size: 0.88rem;
+      color: #93c5fd;
+    }
+
+    /* Log acordeón */
+    #log-section {
+      margin-top: 1.5rem;
+    }
+
+    details summary {
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: #475569;
+      padding: 0.5rem 0;
+      user-select: none;
+    }
+
+    details summary:hover { color: #94a3b8; }
+
+    .log-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: 0.75rem;
+    }
+
+    .log-table th {
+      text-align: left;
+      color: #475569;
+      padding: 0.4rem 0.5rem;
+      border-bottom: 1px solid #2d3748;
+    }
+
+    .log-table td {
+      padding: 0.35rem 0.5rem;
+      border-bottom: 1px solid #1a1f2e;
+      color: #64748b;
+    }
+
+    .log-table td.score-cell {
+      color: #34d399;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Segmentador Óptimo de Contenido</h1>
+      <p>Divide texto en segmentos coherentes usando un LLM local (Qwen 2.5-3B)</p>
+    </header>
+
+    <!-- Formulario -->
+    <div class="card">
+      <label for="texto">Texto a segmentar</label>
+      <textarea id="texto" placeholder="Pega o escribe aquí el texto que deseas segmentar..."></textarea>
+
+      <div class="options-row">
+        <div class="option-group">
+          <label for="max_seg">Máx. oraciones por segmento</label>
+          <input type="number" id="max_seg" value="6" min="2" max="20"/>
+          <span class="hint">Controla el tamaño máximo de cada bloque.</span>
+        </div>
+        <div class="option-group">
+          <label for="min_seg">Mín. oraciones por segmento</label>
+          <input type="number" id="min_seg" value="1" min="1" max="5"/>
+          <span class="hint">Evita segmentos demasiado pequeños.</span>
+        </div>
+      </div>
+
+      <button id="btn-segmentar" onclick="segmentar()">Segmentar</button>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading">
+      <div class="spinner"></div>
+      <p>El LLM está evaluando la coherencia de cada segmento candidato…<br/>
+         <small>Esto puede tomar algunos segundos según el largo del texto.</small>
+      </p>
+    </div>
+
+    <!-- Error -->
+    <div id="error-box"></div>
+
+    <!-- Resultados -->
+    <div id="results">
+      <div class="results-header">
+        <h2>Segmentación óptima</h2>
+        <span class="badge" id="stats-badge"></span>
+      </div>
+      <div id="segments-container"></div>
+
+      <div id="log-section">
+        <details>
+          <summary>▶ Ver log de evaluaciones del LLM</summary>
+          <table class="log-table">
+            <thead>
+              <tr><th>#</th><th>Segmento evaluado</th><th>Coherencia</th></tr>
+            </thead>
+            <tbody id="log-tbody"></tbody>
+          </table>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function segmentar() {
+      const texto = document.getElementById('texto').value.trim();
+      const max_seg = parseInt(document.getElementById('max_seg').value);
+      const min_seg = parseInt(document.getElementById('min_seg').value);
+
+      if (!texto) { showError('Ingresa un texto primero.'); return; }
+
+      setLoading(true);
+      hideError();
+      hideResults();
+
+      try {
+        const res = await fetch('/segmentar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ texto, max_seg, min_seg }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) { showError(data.error || 'Error desconocido.'); return; }
+
+        renderResults(data);
+      } catch (e) {
+        showError('No se pudo conectar con el servidor.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function renderResults(data) {
+      document.getElementById('stats-badge').textContent =
+        `${data.total_segmentos} segmentos · ${data.total_oraciones} oraciones`;
+
+      const container = document.getElementById('segments-container');
+      container.innerHTML = '';
+
+      data.segmentos.forEach((seg, i) => {
+        const score = seg.score !== null ? seg.score : '—';
+        const pct = seg.score !== null ? Math.round(seg.score * 100) : 0;
+
+        const pills = seg.oraciones
+          .map(o => `<span class="sentence-pill">${escapeHtml(o)}</span>`)
+          .join(' ');
+
+        container.innerHTML += `
+          <div class="segment-card">
+            <div class="segment-meta">
+              <span class="segment-title">Segmento ${i + 1} &nbsp;·&nbsp; ${seg.num_oraciones} oración${seg.num_oraciones !== 1 ? 'es' : ''}</span>
+              <div class="score-bar-wrap">
+                <div class="score-bar"><div class="score-bar-fill" style="width:${pct}%"></div></div>
+                <span class="score-label">${typeof score === 'number' ? score.toFixed(2) : score}</span>
+              </div>
+            </div>
+            <div class="segment-text">${pills}</div>
+          </div>`;
+      });
+
+      // Log
+      const tbody = document.getElementById('log-tbody');
+      tbody.innerHTML = '';
+      data.log.forEach((entry, i) => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${escapeHtml(entry.text)}${entry.text.length >= 80 ? '…' : ''}</td>
+            <td class="score-cell">${entry.score.toFixed(3)}</td>
+          </tr>`;
+      });
+
+      document.getElementById('results').style.display = 'block';
+    }
+
+    function setLoading(on) {
+      document.getElementById('loading').style.display = on ? 'block' : 'none';
+      document.getElementById('btn-segmentar').disabled = on;
+    }
+
+    function showError(msg) {
+      const box = document.getElementById('error-box');
+      box.textContent = '⚠ ' + msg;
+      box.style.display = 'block';
+    }
+
+    function hideError() { document.getElementById('error-box').style.display = 'none'; }
+    function hideResults() { document.getElementById('results').style.display = 'none'; }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // Enviar con Ctrl+Enter
+    document.addEventListener('keydown', e => {
+      if (e.ctrlKey && e.key === 'Enter') segmentar();
+    });
+  </script>
+</body>
+</html>
