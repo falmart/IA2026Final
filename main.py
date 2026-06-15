@@ -1,11 +1,3 @@
-"""
-CLI principal del segmentador de contenido.
-
-Uso:
-    python main.py --model /ruta/al/modelo.gguf
-    python main.py --model /ruta/al/modelo.gguf --file texto.txt
-    python main.py --model /ruta/al/modelo.gguf --max-seg 5
-"""
 import argparse
 import os
 import sys

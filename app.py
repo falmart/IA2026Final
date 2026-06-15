@@ -1,6 +1,3 @@
-"""
-Interfaz web Flask para el segmentador de contenido.
-"""
 import os
 import threading
 from typing import List, Dict, Any

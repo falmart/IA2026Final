@@ -1,16 +1,3 @@
-"""
-Evaluación del segmentador sobre el dataset anotado.
-
-Métricas:
-  - Pk:          error de ventana deslizante (menor = mejor)
-  - WindowDiff:  variante más estricta de Pk (menor = mejor)
-  - F1 de fronteras: precisión/recall sobre posiciones de corte exactas
-
-Uso:
-    python evaluate.py
-    python evaluate.py --id D01          # solo un documento
-    python evaluate.py --max-seg 8
-"""
 from __future__ import annotations
 import argparse
 import json

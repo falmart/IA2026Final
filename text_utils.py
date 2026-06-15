@@ -1,7 +1,3 @@
-"""
-Utilidades para dividir texto libre en oraciones.
-Usa nltk si está disponible; si no, fallback con regex.
-"""
 import re
 
 

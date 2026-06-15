@@ -1,7 +1,3 @@
-"""
-Interfaz con el modelo local via llama-cpp-python.
-Evalúa la coherencia semántica de un segmento de texto.
-"""
 from typing import Optional
 from llama_cpp import Llama
 
@@ -21,10 +17,6 @@ def load_model(model_path: str, n_ctx: int = 2048, n_threads: int = 4) -> None:
 
 
 def score_coherence(segment_text: str) -> float:
-    """
-    Pide al LLM que evalúe la coherencia interna de un segmento.
-    Retorna un float entre 0.0 y 1.0.
-    """
     if _model is None:
         raise RuntimeError("Modelo no cargado. Llama load_model() primero.")
 

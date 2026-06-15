@@ -1,12 +1,3 @@
-"""
-Segmentación óptima mediante programación dinámica.
-
-Dado una lista de oraciones, encuentra la partición en segmentos
-contiguos que maximice la suma de coherencias (evaluadas por el LLM).
-
-Complejidad: O(n² · tiempo_LLM). Para n > 20 oraciones se recomienda
-limitar max_segment_size para reducir llamadas al modelo.
-"""
 from __future__ import annotations
 import math
 from typing import Callable

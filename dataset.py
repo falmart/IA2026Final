@@ -1,16 +1,3 @@
-"""
-Dataset de textos con segmentación anotada manualmente.
-
-Cada entrada contiene:
-  - 'id':       identificador único
-  - 'texto':    texto completo
-  - 'segmentos': lista de segmentos correctos (ground truth)
-  - 'temas':    etiquetas temáticas de cada segmento
-
-El dataset fue generado sintéticamente combinando párrafos sobre
-temas claramente distintos, garantizando alta coherencia interna
-por segmento y baja coherencia entre segmentos adyacentes.
-"""
 
 DATASET = [
     {
