@@ -180,6 +180,40 @@ DATASET = [
             ],
         ],
     },
+    {
+        "id": "D06",
+        "temas": ["cine", "océanos", "ajedrez"],
+        "texto": (
+            "El cine mudo alcanzó su apogeo artístico durante la década de 1920. "
+            "Charles Chaplin y Buster Keaton demostraron que la comedia física podía transmitir emociones complejas sin palabras. "
+            "La llegada del sonido en 1927 con El cantante de jazz transformó la industria para siempre. "
+            "Los océanos cubren más del setenta por ciento de la superficie terrestre. "
+            "Las corrientes marinas regulan el clima global transportando calor desde el ecuador hacia los polos. "
+            "La fosa de las Marianas alcanza casi once kilómetros de profundidad. "
+            "Los arrecifes de coral albergan la cuarta parte de todas las especies marinas conocidas. "
+            "La acidificación del agua por el dióxido de carbono amenaza gravemente estos ecosistemas. "
+            "El ajedrez moderno se consolidó en Europa durante el siglo XV con las reglas actuales de la dama y el alfil. "
+            "Los motores de análisis actuales superan ampliamente a cualquier gran maestro humano. "
+        ),
+        "segmentos": [
+            [
+                "El cine mudo alcanzó su apogeo artístico durante la década de 1920.",
+                "Charles Chaplin y Buster Keaton demostraron que la comedia física podía transmitir emociones complejas sin palabras.",
+                "La llegada del sonido en 1927 con El cantante de jazz transformó la industria para siempre.",
+            ],
+            [
+                "Los océanos cubren más del setenta por ciento de la superficie terrestre.",
+                "Las corrientes marinas regulan el clima global transportando calor desde el ecuador hacia los polos.",
+                "La fosa de las Marianas alcanza casi once kilómetros de profundidad.",
+                "Los arrecifes de coral albergan la cuarta parte de todas las especies marinas conocidas.",
+                "La acidificación del agua por el dióxido de carbono amenaza gravemente estos ecosistemas.",
+            ],
+            [
+                "El ajedrez moderno se consolidó en Europa durante el siglo XV con las reglas actuales de la dama y el alfil.",
+                "Los motores de análisis actuales superan ampliamente a cualquier gran maestro humano.",
+            ],
+        ],
+    },
 ]
 
 

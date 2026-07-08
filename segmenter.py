@@ -19,12 +19,22 @@ def segment_dp(
     """
     Programación dinámica para segmentación óptima.
 
+    El objetivo maximizado es la suma de coherencia * tamaño de cada segmento
+    (coherencia media ponderada por oración). Ponderar por tamaño hace que
+    fragmentar el texto en muchos segmentos pequeños no infle la puntuación:
+    un segmento de 4 oraciones con coherencia 1.0 vale lo mismo que 4
+    segmentos de 1 oración perfectos, y la penalización a singletons
+    desempata a favor de los segmentos grandes.
+
+    Las oraciones sueltas son trivialmente coherentes, por lo que reciben
+    coherencia 1.0 sin consultar al LLM (y pagan length_penalty).
+
     Args:
         sentences:         Lista de oraciones del texto.
         score_fn:          Función que recibe texto y devuelve coherencia [0,1].
         max_segment_size:  Máximo de oraciones por segmento (limita llamadas al LLM).
         min_segment_size:  Mínimo de oraciones por segmento.
-        length_penalty:    Penalización leve a segmentos de una sola oración.
+        length_penalty:    Penalización a segmentos de una sola oración.
 
     Returns:
         Lista de segmentos; cada segmento es una lista de oraciones.
@@ -54,12 +64,15 @@ def segment_dp(
         for j in range(i + min_segment_size, min(i + max_segment_size, n) + 1):
             seg_sentences = sentences[i:j]
             seg_text = _sentences_to_text(seg_sentences)
-            coherence = score_fn(seg_text)
-
-            # Penalización suave a segmentos muy cortos
             size = j - i
+
+            if size == 1:
+                coherence = 1.0  # una oración sola es trivialmente coherente
+            else:
+                coherence = score_fn(seg_text)
+
             penalty = length_penalty if size == 1 else 0.0
-            adjusted = coherence - penalty
+            adjusted = coherence * size - penalty
 
             call_count += 1
             print(

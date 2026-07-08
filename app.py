@@ -47,10 +47,12 @@ def segmentar():
 
     # Recolectamos puntuaciones intermedias para mostrarlas en la UI
     scores_log: List[Dict[str, Any]] = []
+    scores_by_text: Dict[str, float] = {}
 
     def scoring_with_log(seg_text: str) -> float:
         score = score_coherence(seg_text)
         scores_log.append({"text": seg_text[:80], "score": round(score, 3)})
+        scores_by_text[seg_text] = round(score, 3)
         return score
 
     segments = segment_dp(
@@ -63,11 +65,9 @@ def segmentar():
     result_segments = []
     for seg in segments:
         text = " ".join(seg)
-        # Obtener la puntuación ya calculada para este segmento exacto
-        seg_score = next(
-            (entry["score"] for entry in scores_log if entry["text"] == text[:80]),
-            None,
-        )
+        # Puntuación ya calculada para este segmento exacto
+        # (las oraciones sueltas no pasan por el LLM: coherencia trivial 1.0)
+        seg_score = scores_by_text.get(text, 1.0 if len(seg) == 1 else None)
         result_segments.append({
             "oraciones": seg,
             "texto": text,
@@ -86,4 +86,5 @@ def segmentar():
 if __name__ == "__main__":
     # Cargar modelo en el hilo principal antes de arrancar Flask
     init_model()
-    app.run(debug=False, port=5000, threaded=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=False, port=port, threaded=True)
